@@ -5,7 +5,7 @@ import type { Message } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, LoaderCircle, ArrowUp } from 'lucide-react';
+import { LoaderCircle, ArrowUp } from 'lucide-react';
 import ChatMessage from './message';
 import { getInsurancePlans } from '@/app/actions';
 import PlanResults from '../plan-results';
