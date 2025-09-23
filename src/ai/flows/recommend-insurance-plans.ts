@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {getProductKnowledgeBase} from '@/ai/tools/knowledge-base-tool';
 import {z} from 'genkit';
 
 const RecommendInsurancePlansInputSchema = z.object({
@@ -17,7 +18,7 @@ const RecommendInsurancePlansInputSchema = z.object({
   familyStatus: z
     .string()
     .describe(
-      'The family status of the customer (e.g., single, married, divorced).' 
+      'The family status of the customer (e.g., single, married, divorced).'
     ),
   healthCondition: z
     .string()
@@ -25,22 +26,30 @@ const RecommendInsurancePlansInputSchema = z.object({
   preferences: z
     .string()
     .describe('Any specific insurance preferences of the customer.'),
-  language: z.string().describe('The language for the response (e.g., "TH" for Thai, "EN" for English).'),
-  chatStyle: z.string().describe('The desired chat style for the AI response (e.g., friendly, professional, analytical).'),
+  language: z
+    .string()
+    .describe('The language for the response (e.g., "TH" for Thai, "EN" for English).'),
+  chatStyle: z
+    .string()
+    .describe(
+      'The desired chat style for the AI response (e.g., friendly, professional, analytical).'
+    ),
 });
 export type RecommendInsurancePlansInput = z.infer<
   typeof RecommendInsurancePlansInputSchema
 >;
 
 const RecommendInsurancePlansOutputSchema = z.object({
-  plans: z.array(
-    z.object({
-      name: z.string().describe('The name of the insurance plan.'),
-      coverage: z.string().describe('The coverage details of the plan.'),
-      premium: z.string().describe('The premium amount of the plan.'),
-      benefits: z.string().describe('The benefits of the insurance plan.'),
-    })
-  ).describe('A list of recommended insurance plans.'),
+  plans: z
+    .array(
+      z.object({
+        name: z.string().describe('The name of the insurance plan.'),
+        coverage: z.string().describe('The coverage details of the plan.'),
+        premium: z.string().describe('The premium amount of the plan.'),
+        benefits: z.string().describe('The benefits of the insurance plan.'),
+      })
+    )
+    .describe('A list of recommended insurance plans.'),
 });
 export type RecommendInsurancePlansOutput = z.infer<
   typeof RecommendInsurancePlansOutputSchema
@@ -56,10 +65,12 @@ const prompt = ai.definePrompt({
   name: 'recommendInsurancePlansPrompt',
   input: {schema: RecommendInsurancePlansInputSchema},
   output: {schema: RecommendInsurancePlansOutputSchema},
+  tools: [getProductKnowledgeBase],
   prompt: `You are an AI assistant specialized in recommending insurance plans. Your response must be in the language specified by the user ({{language}}).
   Your response style should be {{chatStyle}}.
 
-  Based on the customer's information and preferences, recommend suitable insurance plans.
+  First, use the getProductKnowledgeBase tool to get the list of available insurance products and their details.
+  Then, based on the customer's information and preferences, recommend suitable insurance plans from the knowledge base.
 
   Customer Information:
   Age: {{{age}}}
