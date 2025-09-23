@@ -28,7 +28,7 @@ const PlanResults = ({ plans }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <DollarSign className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">Premium</h4>
+                  <h4 className="font-semibold">เบี้ยประกัน</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.premium}
                   </p>
@@ -37,7 +37,7 @@ const PlanResults = ({ plans }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">Coverage Details</h4>
+                  <h4 className="font-semibold">รายละเอียดความคุ้มครอง</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.coverage}
                   </p>
@@ -46,7 +46,7 @@ const PlanResults = ({ plans }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <ListChecks className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">Benefits</h4>
+                  <h4 className="font-semibold">ผลประโยชน์</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.benefits}
                   </p>

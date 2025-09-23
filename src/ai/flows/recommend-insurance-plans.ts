@@ -54,7 +54,7 @@ const prompt = ai.definePrompt({
   name: 'recommendInsurancePlansPrompt',
   input: {schema: RecommendInsurancePlansInputSchema},
   output: {schema: RecommendInsurancePlansOutputSchema},
-  prompt: `You are an AI assistant specialized in recommending insurance plans.
+  prompt: `You are an AI assistant specialized in recommending insurance plans. Your response must be in Thai.
 
   Based on the customer's information and preferences, recommend suitable insurance plans.
 
@@ -67,7 +67,7 @@ const prompt = ai.definePrompt({
 
   Please provide a list of recommended insurance plans with their names, coverage details, premium amounts, and benefits.
   Ensure the recommendations align with the customer's needs and financial situation.
-  Return the plans in JSON format.`,
+  Return the plans in JSON format. The content of the JSON fields must be in Thai.`,
 });
 
 const recommendInsurancePlansFlow = ai.defineFlow(
