@@ -5,7 +5,7 @@ import type { Message } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendHorizonal, LoaderCircle, PlusCircle, Mic } from 'lucide-react';
+import { SendHorizonal, LoaderCircle } from 'lucide-react';
 import ChatMessage from './message';
 import { getInsurancePlans } from '@/app/actions';
 import PlanResults from '../plan-results';
@@ -59,10 +59,8 @@ const Chat = () => {
       };
       setMessages((prev) => [...prev, thinkingMessage]);
       
-      // Since the new flow only has one input, we will use it for everything.
-      // This is a simplification. A more robust solution might use a different flow.
       const result = await getInsurancePlans({
-        age: 30, // Default values as we are not collecting this info anymore
+        age: 30,
         income: 50000,
         familyStatus: 'Single',
         healthCondition: 'Good',
@@ -113,8 +111,8 @@ const Chat = () => {
             <Textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask any question or type ‘/’ for commands"
-              className="flex-1 resize-none rounded-2xl border-input bg-background shadow-sm pr-28 pl-12 py-3 min-h-[56px]"
+              placeholder="Ask any question..."
+              className="flex-1 resize-none rounded-2xl border-input bg-background shadow-sm pr-14 pl-4 py-3 min-h-[56px]"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -124,16 +122,6 @@ const Chat = () => {
               }}
               disabled={isPending || isFinished}
             />
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Button type="button" size="icon" variant="ghost" className="text-muted-foreground hover:text-foreground" disabled={isPending || isFinished}>
-                <PlusCircle className="w-5 h-5" />
-                <span className="sr-only">Add</span>
-              </Button>
-              <Button type="button" size="icon" variant="ghost" className="text-muted-foreground hover:text-foreground" disabled={isPending || isFinished}>
-                <Mic className="w-5 h-5" />
-                <span className="sr-only">Use Microphone</span>
-              </Button>
-            </div>
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               <Button type="submit" size="icon" disabled={isPending || !inputValue.trim() || isFinished} className="rounded-xl w-10 h-10">
                 {isPending ? (
