@@ -4,13 +4,15 @@ import Logo from './logo';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
-const Header = () => {
-  const [language, setLanguage] = useState('TH');
+interface HeaderProps {
+  language: string;
+  setLanguage: (language: string) => void;
+}
 
+const Header = ({ language, setLanguage }: HeaderProps) => {
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'TH' ? 'EN' : 'TH');
+    setLanguage(language === 'TH' ? 'EN' : 'TH');
   }
 
   return (
@@ -18,7 +20,7 @@ const Header = () => {
       <div className="flex items-center gap-3">
         <Logo className="w-8 h-8 text-primary" />
         <h1 className="text-xl font-bold font-headline text-primary">
-          ผู้ช่วยประกัน AI
+          {language === 'TH' ? 'ผู้ช่วยประกัน AI' : 'AI Insurance Assistant'}
         </h1>
       </div>
       <div className="flex items-center gap-2">
@@ -32,7 +34,7 @@ const Header = () => {
         <Button asChild variant="ghost" size="icon">
           <Link href="/chat-style">
             <SlidersHorizontal />
-            <span className="sr-only">ปรับรูปแบบ Chat</span>
+            <span className="sr-only">{language === 'TH' ? 'ปรับรูปแบบ Chat' : 'Adjust Chat Style'}</span>
           </Link>
         </Button>
       </div>

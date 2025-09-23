@@ -20,4 +20,5 @@ export type FormData = {
   familyStatus?: string;
   healthCondition?: string;
   preferences?: string;
+  language?: string;
 };

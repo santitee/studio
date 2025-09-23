@@ -12,7 +12,11 @@ import PlanResults from '../plan-results';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-const Chat = () => {
+interface ChatProps {
+  language: string;
+}
+
+const Chat = ({ language }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -24,10 +28,12 @@ const Chat = () => {
       {
         id: crypto.randomUUID(),
         sender: 'bot',
-        text: "ยินดีต้อนรับสู่ผู้ช่วยประกัน AI! ฉันพร้อมช่วยคุณค้นหาแผนประกันที่สมบูรณ์แบบที่สุด โปรดอธิบายความต้องการของคุณ แล้วฉันจะค้นหาตัวเลือกที่ดีที่สุดสำหรับคุณ",
+        text: language === 'TH'
+          ? "ยินดีต้อนรับสู่ผู้ช่วยประกัน AI! ฉันพร้อมช่วยคุณค้นหาแผนประกันที่สมบูรณ์แบบที่สุด โปรดอธิบายความต้องการของคุณ แล้วฉันจะค้นหาตัวเลือกที่ดีที่สุดสำหรับคุณ"
+          : "Welcome to the AI Insurance Assistant! I'm here to help you find the perfect insurance plan. Please describe your needs, and I'll find the best options for you.",
       },
     ]);
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -55,7 +61,9 @@ const Chat = () => {
       const thinkingMessage: Message = {
         id: crypto.randomUUID(),
         sender: 'bot',
-        text: 'ขอบคุณสำหรับข้อมูล! กำลังวิเคราะห์ความต้องการของคุณเพื่อค้นหาแผนประกันที่ดีที่สุด...',
+        text: language === 'TH'
+          ? 'ขอบคุณสำหรับข้อมูล! กำลังวิเคราะห์ความต้องการของคุณเพื่อค้นหาแผนประกันที่ดีที่สุด...'
+          : 'Thank you for the information! Analyzing your needs to find the best insurance plans...',
       };
       setMessages((prev) => [...prev, thinkingMessage]);
       
@@ -65,13 +73,16 @@ const Chat = () => {
         familyStatus: 'โสด',
         healthCondition: 'สุขภาพดี',
         preferences: currentUserInput,
+        language: language,
       });
 
       if (result.success && result.plans) {
         const resultsMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
-          text: "นี่คือแผนประกันภัยยอดนิยมที่ฉันพบสำหรับคุณตามคำขอของคุณ:",
+          text: language === 'TH'
+            ? "นี่คือแผนประกันภัยยอดนิยมที่ฉันพบสำหรับคุณตามคำขอของคุณ:"
+            : "Here are the top insurance plans I found for you based on your request:",
         };
         const plansComponentMessage: Message = {
           id: crypto.randomUUID(),
@@ -81,14 +92,16 @@ const Chat = () => {
         setMessages((prev) => [...prev.filter(m => m.id !== thinkingMessage.id), resultsMessage, plansComponentMessage]);
       } else {
         toast({
-          title: 'เกิดข้อผิดพลาด',
-          description: result.error || 'ไม่สามารถดึงข้อมูลคำแนะนำได้',
+          title: language === 'TH' ? 'เกิดข้อผิดพลาด' : 'An error occurred',
+          description: result.error || (language === 'TH' ? 'ไม่สามารถดึงข้อมูลคำแนะนำได้' : 'Could not retrieve recommendations.'),
           variant: 'destructive',
         });
         const errorMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
-          text: "ขออภัย ฉันพบข้อผิดพลาดขณะค้นหาแผนสำหรับคุณ กรุณาลองใหม่อีกครั้งในภายหลัง",
+          text: language === 'TH'
+            ? "ขออภัย ฉันพบข้อผิดพลาดขณะค้นหาแผนสำหรับคุณ กรุณาลองใหม่อีกครั้งในภายหลัง"
+            : "I'm sorry, I encountered an error while searching for plans for you. Please try again later.",
         };
         setMessages((prev) => [...prev.filter(m => m.id !== thinkingMessage.id), errorMessage]);
       }
@@ -113,7 +126,7 @@ const Chat = () => {
             <Textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="พิมพ์คำถามของคุณที่นี่..."
+              placeholder={language === 'TH' ? "พิมพ์คำถามของคุณที่นี่..." : "Type your question here..."}
               className="flex-1 resize-none rounded-2xl border-input bg-background shadow-sm pr-12 pl-4 py-3 min-h-[56px] text-base"
               rows={1}
               onKeyDown={(e) => {
@@ -138,7 +151,7 @@ const Chat = () => {
               ) : (
                 <ArrowUp className="w-5 h-5" />
               )}
-              <span className="sr-only">ส่ง</span>
+              <span className="sr-only">{language === 'TH' ? "ส่ง" : "Send"}</span>
             </Button>
           </div>
         </form>
