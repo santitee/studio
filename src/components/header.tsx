@@ -4,24 +4,35 @@ import Logo from './logo';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   language: string;
   setLanguage: (language: string) => void;
+  chatStyle: string;
 }
 
-const Header = ({ language, setLanguage }: HeaderProps) => {
+const Header = ({ language, setLanguage, chatStyle }: HeaderProps) => {
   const toggleLanguage = () => {
     setLanguage(language === 'TH' ? 'EN' : 'TH');
+  }
+
+  const chatStyleText: {[key: string]: string} = {
+    'friendly': language === 'TH' ? 'เป็นกันเอง' : 'Friendly',
+    'professional': language === 'TH' ? 'เป็นมืออาชีพ' : 'Professional',
+    'analytical': language === 'TH' ? 'นักวิเคราะห์' : 'Analytical',
   }
 
   return (
     <header className="flex items-center justify-between h-16 px-4 md:px-6 border-b bg-card/80 backdrop-blur-sm shrink-0">
       <div className="flex items-center gap-3">
         <Logo className="w-8 h-8 text-primary" />
-        <h1 className="text-xl font-bold font-headline text-primary">
-          {language === 'TH' ? 'ผู้ช่วยประกัน AI' : 'AI Insurance Assistant'}
-        </h1>
+        <div className='flex items-center gap-2'>
+          <h1 className="text-xl font-bold font-headline text-primary">
+            {language === 'TH' ? 'ผู้ช่วยประกัน AI' : 'AI Insurance Assistant'}
+          </h1>
+          <Badge variant="outline" className="hidden sm:inline-flex">{chatStyleText[chatStyle]}</Badge>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Button 

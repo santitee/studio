@@ -14,9 +14,10 @@ import { cn } from '@/lib/utils';
 
 interface ChatProps {
   language: string;
+  chatStyle: string;
 }
 
-const Chat = ({ language }: ChatProps) => {
+const Chat = ({ language, chatStyle }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -74,6 +75,7 @@ const Chat = ({ language }: ChatProps) => {
         healthCondition: 'สุขภาพดี',
         preferences: currentUserInput,
         language: language,
+        chatStyle: chatStyle,
       });
 
       if (result.success && result.plans) {

@@ -26,6 +26,7 @@ const RecommendInsurancePlansInputSchema = z.object({
     .string()
     .describe('Any specific insurance preferences of the customer.'),
   language: z.string().describe('The language for the response (e.g., "TH" for Thai, "EN" for English).'),
+  chatStyle: z.string().describe('The desired chat style for the AI response (e.g., friendly, professional, analytical).'),
 });
 export type RecommendInsurancePlansInput = z.infer<
   typeof RecommendInsurancePlansInputSchema
@@ -56,6 +57,7 @@ const prompt = ai.definePrompt({
   input: {schema: RecommendInsurancePlansInputSchema},
   output: {schema: RecommendInsurancePlansOutputSchema},
   prompt: `You are an AI assistant specialized in recommending insurance plans. Your response must be in the language specified by the user ({{language}}).
+  Your response style should be {{chatStyle}}.
 
   Based on the customer's information and preferences, recommend suitable insurance plans.
 

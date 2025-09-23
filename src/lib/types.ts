@@ -21,4 +21,5 @@ export type FormData = {
   healthCondition?: string;
   preferences?: string;
   language?: string;
+  chatStyle?: string;
 };
