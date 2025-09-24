@@ -8,22 +8,9 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
     height="1em"
     {...props}
   >
-    <path fill="none" d="M0 0h256v256H0z" />
     <path
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={16}
-      d="M168 200h48a8 8 0 0 0 8-8V64a8 8 0 0 0-8-8H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h48m88-144-56 56"
-    />
-    <path
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={16}
-      d="M88 200h80V104a40 40 0 0 0-80 0z"
+      fill="currentColor"
+      d="M134.14 37.86a16 16 0 0 0-22.62 0L89.86 59.52a16 16 0 0 0 0 22.62L111.52 104a16 16 0 0 0 22.62 0l21.66-21.66a16 16 0 0 0 0-22.62zM218.63 93.37a16 16 0 0 0-22.62 0l-11 11a16 16 0 0 0 0 22.62l11 11a16 16 0 0 0 22.62 0l11-11a16 16 0 0 0 0-22.62zM56 152a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48zm0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32z"
     />
   </svg>
 );

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'ผู้ช่วยประกัน AI',
+  title: 'Jeb_',
   description: 'ผู้ช่วย AI ส่วนตัวของคุณในการค้นหาแผนประกันที่สมบูรณ์แบบ',
 };
 

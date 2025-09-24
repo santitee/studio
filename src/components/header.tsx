@@ -29,7 +29,7 @@ const Header = ({ language, setLanguage, chatStyle }: HeaderProps) => {
         <Logo className="w-8 h-8 text-primary" />
         <div className='flex items-center gap-2'>
           <h1 className="text-xl font-bold font-headline text-primary">
-            {language === 'TH' ? 'ผู้ช่วยประกัน AI' : 'AI Insurance Assistant'}
+            Jeb_
           </h1>
           <Badge variant="outline" className="hidden sm:inline-flex">{chatStyleText[chatStyle]}</Badge>
         </div>
