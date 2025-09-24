@@ -6,6 +6,7 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
     viewBox="0 0 256 256"
     width="1em"
     height="1em"
+    shape-rendering="geometricPrecision"
     {...props}
   >
     <path
