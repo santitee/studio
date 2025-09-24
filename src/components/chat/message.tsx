@@ -1,14 +1,10 @@
 import type { Message } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Skeleton } from '@/components/ui/skeleton';
+import Logo from '../logo';
 
 interface MessageProps {
   message: Message;
 }
-
-const botAvatar = PlaceHolderImages.find((img) => img.id === 'bot-avatar');
 
 const ChatMessage = ({ message }: MessageProps) => {
   const isBot = message.sender === 'bot';
@@ -21,19 +17,8 @@ const ChatMessage = ({ message }: MessageProps) => {
       )}
     >
       {isBot && (
-        <div className="flex-shrink-0">
-          {botAvatar ? (
-            <Image
-              src={botAvatar.imageUrl}
-              alt={botAvatar.description}
-              width={40}
-              height={40}
-              className="rounded-full"
-              data-ai-hint={botAvatar.imageHint}
-            />
-          ) : (
-            <Skeleton className="w-10 h-10 rounded-full" />
-          )}
+        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+          <Logo className="w-6 h-6 text-primary-foreground" />
         </div>
       )}
       <div
