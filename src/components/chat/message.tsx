@@ -23,10 +23,11 @@ const ChatMessage = ({ message }: MessageProps) => {
       )}
       <div
         className={cn(
-          'max-w-[80%] rounded-lg px-4 py-3',
+          'max-w-[80%] rounded-lg',
           isBot
             ? 'bg-card text-card-foreground shadow-sm'
-            : 'bg-primary text-primary-foreground'
+            : 'bg-primary text-primary-foreground',
+           !message.component && 'px-4 py-3'
         )}
       >
         {message.text && (

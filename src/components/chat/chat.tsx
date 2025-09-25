@@ -11,6 +11,7 @@ import { getInsurancePlans } from '@/app/actions';
 import PlanResults from '../plan-results';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import TypingIndicator from './typing-indicator';
 
 interface ChatProps {
   language: string;
@@ -43,7 +44,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         behavior: 'smooth',
       });
     }
-  }, [messages]);
+  }, [messages, isPending]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,15 +60,6 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
     setInputValue('');
 
     startTransition(async () => {
-      const thinkingMessage: Message = {
-        id: crypto.randomUUID(),
-        sender: 'bot',
-        text: language === 'TH'
-          ? 'ขอบคุณสำหรับข้อมูล! กำลังวิเคราะห์ความต้องการของคุณเพื่อค้นหาแผนประกันที่ดีที่สุด...'
-          : 'Thank you for the information! Analyzing your needs to find the best insurance plans...',
-      };
-      setMessages((prev) => [...prev, thinkingMessage]);
-      
       const result = await getInsurancePlans({
         age: 30,
         income: 50000,
@@ -91,7 +83,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
           sender: 'bot',
           component: <PlanResults plans={result.plans} />,
         };
-        setMessages((prev) => [...prev.filter(m => m.id !== thinkingMessage.id), resultsMessage, plansComponentMessage]);
+        setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
       } else {
         toast({
           title: language === 'TH' ? 'เกิดข้อผิดพลาด' : 'An error occurred',
@@ -105,7 +97,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
             ? "ขออภัย ฉันพบข้อผิดพลาดขณะค้นหาแผนสำหรับคุณ กรุณาลองใหม่อีกครั้งในภายหลัง"
             : "I'm sorry, I encountered an error while searching for plans for you. Please try again later.",
         };
-        setMessages((prev) => [...prev.filter(m => m.id !== thinkingMessage.id), errorMessage]);
+        setMessages((prev) => [...prev, errorMessage]);
       }
     });
   };
@@ -117,6 +109,15 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
+          {isPending && (
+            <ChatMessage
+              message={{
+                id: 'typing',
+                sender: 'bot',
+                component: <TypingIndicator />,
+              }}
+            />
+          )}
         </div>
       </ScrollArea>
       <div className="px-4 md:px-6 py-4 border-t bg-card shrink-0">
