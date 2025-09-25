@@ -3,16 +3,19 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { DollarSign, ListChecks, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, DollarSign, ListChecks, ShieldCheck } from 'lucide-react';
 
 interface PlanResultsProps {
   plans: InsurancePlan[];
+  onSelectPlan: (plan: InsurancePlan) => void;
 }
 
-const PlanResults = ({ plans }: PlanResultsProps) => {
+const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
   return (
     <div className="p-4 animate-in fade-in duration-500">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -53,6 +56,16 @@ const PlanResults = ({ plans }: PlanResultsProps) => {
                 </div>
               </div>
             </CardContent>
+            <CardFooter>
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={() => onSelectPlan(plan)}
+              >
+                ดูรายละเอียด
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
           </Card>
         ))}
       </div>

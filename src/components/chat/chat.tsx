@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import type { Message } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import type { Message, InsurancePlan } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,6 +25,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setMessages([
@@ -45,6 +47,16 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
       });
     }
   }, [messages, isPending]);
+
+  const handleSelectPlan = (plan: InsurancePlan) => {
+    const params = new URLSearchParams({
+      name: plan.name,
+      coverage: plan.coverage,
+      premium: plan.premium,
+      benefits: plan.benefits,
+    });
+    router.push(`/product-summary?${params.toString()}`);
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +93,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         const plansComponentMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
-          component: <PlanResults plans={result.plans} />,
+          component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} />,
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
       } else {
