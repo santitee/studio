@@ -50,7 +50,7 @@ This command will start the Genkit server. Keep this terminal window open.
 
 #### Terminal 2: Run the Web Application (Next.js)
 
-In another terminal window, navigate to the project directory and start the Next.js development server:
+In another terminal window, navigate to the project directory, and start the Next.js development server:
 
 ```bash
 npm run dev
