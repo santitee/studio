@@ -10,7 +10,6 @@ import { LoaderCircle, ArrowUp } from 'lucide-react';
 import ChatMessage from './message';
 import { getInsurancePlans } from '@/app/actions';
 import PlanResults from '../plan-results';
-import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import TypingIndicator from './typing-indicator';
 
@@ -23,7 +22,6 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -97,11 +95,6 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
       } else {
-        toast({
-          title: language === 'TH' ? 'เกิดข้อผิดพลาด' : 'An error occurred',
-          description: result.error || (language === 'TH' ? 'ไม่สามารถดึงข้อมูลคำแนะนำได้' : 'Could not retrieve recommendations.'),
-          variant: 'destructive',
-        });
         const errorMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
