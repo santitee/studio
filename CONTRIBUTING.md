@@ -29,17 +29,26 @@ Open your terminal, navigate to the project's root directory, and run the follow
 npm install
 ```
 
-### 3. Run the AI Backend (Genkit)
+### 3. Run the Development Servers
 
-For the AI features to work, you need to run the Genkit development server. Open a new terminal window, navigate to the project directory, and run:
+You need to run two separate servers for this project to work correctly: the **Next.js web application** and the **Genkit AI backend**.
+
+#### Terminal 1: Run the AI Backend (Genkit)
+
+For the AI features to work, you need to run the Genkit development server. This also starts the **Genkit Developer UI**, which acts as API documentation similar to Swagger.
+
+Open a new terminal window, navigate to the project directory, and run:
 
 ```bash
 npm run genkit:watch
 ```
 
-This command will start the Genkit server and watch for any changes in your AI-related files. Keep this terminal window open.
+This command will start the Genkit server. Keep this terminal window open.
 
-### 4. Run the Web Application (Next.js)
+- **AI Service:** Your AI flows will be running and ready to be called by the web app.
+- **API Documentation (Developer UI):** You can open your browser and go to **[http://localhost:4000](http://localhost:4000)** to see all available AI flows, their inputs/outputs, and test them directly.
+
+#### Terminal 2: Run the Web Application (Next.js)
 
 In another terminal window, navigate to the project directory and start the Next.js development server:
 
@@ -47,12 +56,12 @@ In another terminal window, navigate to the project directory and start the Next
 npm run dev
 ```
 
-This will start the main web application.
+This will start the main web application that you see in the browser preview.
 
-### 5. Access the Application
+### 4. Access the Application
 
 Once both servers are running, you can open your web browser and go to the following address to see the application in action:
 
 [http://localhost:3000](http://localhost:3000)
 
-You should now have the chatbot website running locally on your machine.
+You should now have the chatbot website running locally on your machine, connected to your local AI backend.
