@@ -20,26 +20,74 @@ import Header from '@/components/header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
-// Define the validation schema using Zod
-const formSchema = z.object({
-  firstName: z.string().min(1, { message: 'กรุณากรอกชื่อ' }),
-  lastName: z.string().min(1, { message: 'กรุณากรอกนามสกุล' }),
-  phone: z.string().regex(/^(0[6-9]{1}[0-9]{8})$/, {
-    message: 'กรุณากรอกหมายเลขโทรศัพท์ในประเทศไทยให้ถูกต้อง (เช่น 0812345678)',
-  }),
-  email: z
-    .string()
-    .email({ message: 'รูปแบบอีเมลไม่ถูกต้อง' })
-    .optional()
-    .or(z.literal('')),
-  notes: z.string().optional(),
-});
+const content = {
+  TH: {
+    backToHome: 'กลับไปหน้าหลัก',
+    pageTitle: 'กรอกข้อมูลส่วนตัว',
+    pageDescription: 'กรุณากรอกข้อมูลของคุณเพื่อดำเนินการต่อ',
+    firstNameLabel: 'ชื่อ',
+    firstNamePlaceholder: 'สมชาย',
+    firstNameRequired: 'กรุณากรอกชื่อ',
+    lastNameLabel: 'นามสกุล',
+    lastNamePlaceholder: 'รักดี',
+    lastNameRequired: 'กรุณากรอกนามสกุล',
+    phoneLabel: 'หมายเลขโทรศัพท์',
+    phonePlaceholder: '0812345678',
+    phoneInvalid: 'กรุณากรอกหมายเลขโทรศัพท์ในประเทศไทยให้ถูกต้อง (เช่น 0812345678)',
+    emailLabel: 'อีเมล (ไม่บังคับ)',
+    emailPlaceholder: 'somchai@example.com',
+    emailInvalid: 'รูปแบบอีเมลไม่ถูกต้อง',
+    notesLabel: 'ข้อมูลอื่นๆ / หมายเหตุ',
+    notesPlaceholder: 'เช่น สนใจประกันสุขภาพเพิ่มเติม...',
+    submitButton: 'บันทึกข้อมูล',
+    toastSuccessTitle: 'บันทึกข้อมูลสำเร็จ',
+  },
+  EN: {
+    backToHome: 'Back to Home',
+    pageTitle: 'Enter Your Information',
+    pageDescription: 'Please fill in your details to proceed.',
+    firstNameLabel: 'First Name',
+    firstNamePlaceholder: 'John',
+    firstNameRequired: 'First name is required',
+    lastNameLabel: 'Last Name',
+    lastNamePlaceholder: 'Doe',
+    lastNameRequired: 'Last name is required',
+    phoneLabel: 'Phone Number',
+    phonePlaceholder: '0812345678',
+    phoneInvalid: 'Please enter a valid Thai phone number (e.g., 0812345678)',
+    emailLabel: 'Email (Optional)',
+    emailPlaceholder: 'john.doe@example.com',
+    emailInvalid: 'Invalid email format',
+    notesLabel: 'Other Information / Notes',
+    notesPlaceholder: 'e.g., Interested in additional health insurance...',
+    submitButton: 'Save Information',
+    toastSuccessTitle: 'Information Saved Successfully',
+  }
+}
 
 export default function UserInfoPage() {
+  const [language, setLanguage] = useState('TH');
+  const [chatStyle, setChatStyle] = useState('professional');
   const { toast } = useToast();
+  const t = content[language as keyof typeof content];
 
-  // 1. Define your form.
+  // Define the validation schema using Zod, now dependent on the language
+  const formSchema = z.object({
+    firstName: z.string().min(1, { message: t.firstNameRequired }),
+    lastName: z.string().min(1, { message: t.lastNameRequired }),
+    phone: z.string().regex(/^(0[6-9]{1}[0-9]{8})$/, {
+      message: t.phoneInvalid,
+    }),
+    email: z
+      .string()
+      .email({ message: t.emailInvalid })
+      .optional()
+      .or(z.literal('')),
+    notes: z.string().optional(),
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,13 +99,10 @@ export default function UserInfoPage() {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // For now, we'll just log them and show a toast.
     console.log(values);
     toast({
-      title: 'บันทึกข้อมูลสำเร็จ',
+      title: t.toastSuccessTitle,
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
@@ -66,34 +111,39 @@ export default function UserInfoPage() {
     });
   }
 
+  // We need to re-initialize the resolver if the language changes
+  // so the validation messages are updated.
+  // This is a simple way to trigger a re-render and re-init of the form.
+  const formKey = language;
+
   return (
     <div className="flex flex-col h-screen bg-background">
-      <Header language="TH" setLanguage={() => {}} chatStyle="professional" />
+      <Header language={language} setLanguage={setLanguage} chatStyle={chatStyle} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <Button asChild variant="ghost" className="mb-4">
             <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              กลับไปหน้าหลัก
+              {t.backToHome}
             </Link>
           </Button>
           <Card>
             <CardHeader>
-              <CardTitle>กรอกข้อมูลส่วนตัว</CardTitle>
-              <CardDescription>กรุณากรอกข้อมูลของคุณเพื่อดำเนินการต่อ</CardDescription>
+              <CardTitle>{t.pageTitle}</CardTitle>
+              <CardDescription>{t.pageDescription}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form key={formKey} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>ชื่อ</FormLabel>
+                          <FormLabel>{t.firstNameLabel}</FormLabel>
                           <FormControl>
-                            <Input placeholder="สมชาย" {...field} />
+                            <Input placeholder={t.firstNamePlaceholder} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -104,9 +154,9 @@ export default function UserInfoPage() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>นามสกุล</FormLabel>
+                          <FormLabel>{t.lastNameLabel}</FormLabel>
                           <FormControl>
-                            <Input placeholder="รักดี" {...field} />
+                            <Input placeholder={t.lastNamePlaceholder} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -118,9 +168,9 @@ export default function UserInfoPage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>หมายเลขโทรศัพท์</FormLabel>
+                        <FormLabel>{t.phoneLabel}</FormLabel>
                         <FormControl>
-                          <Input placeholder="0812345678" {...field} />
+                          <Input placeholder={t.phonePlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -131,9 +181,9 @@ export default function UserInfoPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>อีเมล (ไม่บังคับ)</FormLabel>
+                        <FormLabel>{t.emailLabel}</FormLabel>
                         <FormControl>
-                          <Input placeholder="somchai@example.com" {...field} />
+                          <Input placeholder={t.emailPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -144,10 +194,10 @@ export default function UserInfoPage() {
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ข้อมูลอื่นๆ / หมายเหตุ</FormLabel>
+                        <FormLabel>{t.notesLabel}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="เช่น สนใจประกันสุขภาพเพิ่มเติม..."
+                            placeholder={t.notesPlaceholder}
                             className="resize-none"
                             {...field}
                           />
@@ -156,7 +206,7 @@ export default function UserInfoPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">บันทึกข้อมูล</Button>
+                  <Button type="submit">{t.submitButton}</Button>
                 </form>
               </Form>
             </CardContent>
