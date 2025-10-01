@@ -23,7 +23,8 @@ import { useToast } from '@/hooks/use-toast';
 
 // Define the validation schema using Zod
 const formSchema = z.object({
-  fullName: z.string().min(1, { message: 'กรุณากรอกชื่อ-นามสกุล' }),
+  firstName: z.string().min(1, { message: 'กรุณากรอกชื่อ' }),
+  lastName: z.string().min(1, { message: 'กรุณากรอกนามสกุล' }),
   phone: z.string().regex(/^(0[6-9]{1}[0-9]{8})$/, {
     message: 'กรุณากรอกหมายเลขโทรศัพท์ในประเทศไทยให้ถูกต้อง (เช่น 0812345678)',
   }),
@@ -42,7 +43,8 @@ export default function UserInfoPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: '',
+      firstName: '',
+      lastName: '',
       phone: '',
       email: '',
       notes: '',
@@ -83,19 +85,34 @@ export default function UserInfoPage() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>ชื่อ - นามสกุล</FormLabel>
-                        <FormControl>
-                          <Input placeholder="สมชาย รักดี" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ชื่อ</FormLabel>
+                          <FormControl>
+                            <Input placeholder="สมชาย" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>นามสกุล</FormLabel>
+                          <FormControl>
+                            <Input placeholder="รักดี" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
                     name="phone"
