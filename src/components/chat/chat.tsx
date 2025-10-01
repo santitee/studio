@@ -12,6 +12,7 @@ import { getInsurancePlans } from '@/app/actions';
 import PlanResults from '../plan-results';
 import { cn } from '@/lib/utils';
 import TypingIndicator from './typing-indicator';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatProps {
   language: string;
@@ -24,6 +25,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   const [isPending, startTransition] = useTransition();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     setMessages([
@@ -71,22 +73,31 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
 
     startTransition(async () => {
       const result = await getInsurancePlans({
-        age: 30,
-        income: 50000,
-        familyStatus: 'โสด',
-        healthCondition: 'สุขภาพดี',
+        age: 30, // Mock data, will be replaced with form data
+        income: 50000, // Mock data, will be replaced with form data
+        familyStatus: 'โสด', // Mock data, will be replaced with form data
+        healthCondition: 'สุขภาพดี', // Mock data, will be replaced with form data
         preferences: currentUserInput,
         language: language,
         chatStyle: chatStyle,
       });
 
-      if (result.success && result.plans) {
+      // Handle errors from the AI flow
+      if (result.error) {
+        toast({
+          variant: "destructive",
+          title: language === 'TH' ? "เกิดข้อผิดพลาด" : "An Error Occurred",
+          description: language === 'TH' ? "ไม่สามารถเรียกข้อมูลจาก AI ได้ กำลังแสดงแผนยอดนิยมแทน" : "Couldn't get data from the AI. Showing popular plans instead.",
+        });
+      }
+
+      if (result.plans && result.plans.length > 0) {
         const resultsMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
           text: language === 'TH'
-            ? "นี่คือแผนประกันภัยยอดนิยมที่ฉันพบสำหรับคุณตามคำขอของคุณ:"
-            : "Here are the top insurance plans I found for you based on your request:",
+            ? "นี่คือแผนประกันภัยที่ฉันแนะนำสำหรับคุณตามข้อมูลที่ให้มา:"
+            : "Here are the insurance plans I recommend for you based on your information:",
         };
         const plansComponentMessage: Message = {
           id: crypto.randomUUID(),
@@ -99,8 +110,8 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
           id: crypto.randomUUID(),
           sender: 'bot',
           text: language === 'TH'
-            ? "ขออภัย ฉันพบข้อผิดพลาดขณะค้นหาแผนสำหรับคุณ กรุณาลองใหม่อีกครั้งในภายหลัง"
-            : "I'm sorry, I encountered an error while searching for plans for you. Please try again later.",
+            ? "ขออภัย ฉันไม่พบแผนที่ตรงกับความต้องการของคุณ กรุณาลองอธิบายความต้องการของคุณให้ละเอียดขึ้น"
+            : "I'm sorry, I couldn't find any plans that match your request. Please try describing your needs in more detail.",
         };
         setMessages((prev) => [...prev, errorMessage]);
       }

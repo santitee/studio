@@ -6,10 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, BarChart, DollarSign, ListChecks, ShieldCheck, Users } from 'lucide-react';
 import Header from '@/components/header';
+import { useState } from 'react';
 
 function ProductSummaryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [language, setLanguage] = useState('TH');
+  const [chatStyle, setChatStyle] = useState('professional');
 
   // In a real app, you might fetch plan details using an ID
   // For now, we'll pass the details via search params
@@ -22,7 +25,7 @@ function ProductSummaryContent() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <Header language="TH" setLanguage={() => {}} chatStyle="professional" />
+      <Header language={language} setLanguage={setLanguage} chatStyle={chatStyle} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <Button variant="ghost" onClick={() => router.back()} className="mb-4">

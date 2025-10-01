@@ -23,3 +23,9 @@ export type FormData = {
   language?: string;
   chatStyle?: string;
 };
+
+export type ActionResponse = {
+  success: boolean;
+  plans: InsurancePlan[];
+  error?: string;
+}
