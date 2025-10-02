@@ -1,5 +1,39 @@
 {
   "entities": {
+    "UserInfo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserInfo",
+      "type": "object",
+      "description": "Represents the information collected from the user info form.",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The user's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The user's last name."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes from the user."
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "phone"
+      ]
+    },
     "User": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
@@ -158,11 +192,11 @@
       {
         "path": "/users/{userId}",
         "definition": {
-          "entityName": "User",
+          "entityName": "UserInfo",
           "schema": {
-            "$ref": "#/backend/entities/User"
+            "$ref": "#/backend/entities/UserInfo"
           },
-          "description": "Stores user profiles. Access is restricted to the user themselves.",
+          "description": "Stores user profiles and information from the user-info form. Access is restricted to the user themselves.",
           "params": [
             {
               "name": "userId",
@@ -231,3 +265,4 @@
     "reasoning": "The Firestore structure is designed to optimize security, scalability, and debuggability for the InsuroMatch AI Chatbot application. It leverages path-based ownership for user-specific data (chat messages and recommendations) and ensures authorization independence by avoiding `get()` calls in security rules. This is achieved through a structural segregation approach. The structure is designed for QAPs and enforces invariants such as ownership.\n\n*   **Users Collection:** Stores user profiles. Access is restricted to the user themselves, ensuring privacy.\n*   **User-Owned Chat Messages:** Chat messages are stored within user-specific subcollections (`/users/{userId}/chat_messages/{messageId}`). This establishes clear ownership, simplifies security rules, and supports efficient querying of a user's chat history. This structure enables secure `list` operations because access control is enforced on the collection group query level.\n*   **User-Owned Recommendations:** Insurance plan recommendations are stored within user-specific subcollections (`/users/{userId}/recommendations/{recommendationId}`). This follows the same ownership pattern as chat messages, ensuring secure access and simplified rules.\n*   **Insurance Plans Collection:** Insurance plans are stored in a root-level collection.  Depending on requirements (e.g. admin only create) security rules can be configured appropriately."
   }
 }
+    

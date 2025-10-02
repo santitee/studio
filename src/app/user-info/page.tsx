@@ -20,7 +20,12 @@ import Header from '@/components/header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth, useFirestore, useUser } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { initiateAnonymousSignIn, setDocumentNonBlocking } from '@/firebase';
+import type { UserInfo } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 const content = {
   TH: {
@@ -43,6 +48,9 @@ const content = {
     notesPlaceholder: 'เช่น สนใจประกันสุขภาพเพิ่มเติม...',
     submitButton: 'บันทึกข้อมูล',
     toastSuccessTitle: 'บันทึกข้อมูลสำเร็จ',
+    toastSuccessDescription: 'ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว',
+    toastErrorTitle: 'เกิดข้อผิดพลาด',
+    toastErrorDescription: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
   },
   EN: {
     backToHome: 'Back to Home',
@@ -64,6 +72,9 @@ const content = {
     notesPlaceholder: 'e.g., Interested in additional health insurance...',
     submitButton: 'Save Information',
     toastSuccessTitle: 'Information Saved Successfully',
+    toastSuccessDescription: 'Your information has been saved.',
+    toastErrorTitle: 'An Error Occurred',
+    toastErrorDescription: 'Could not save your information. Please try again.',
   }
 }
 
@@ -72,8 +83,18 @@ export default function UserInfoPage() {
   const [chatStyle, setChatStyle] = useState('professional');
   const { toast } = useToast();
   const t = content[language as keyof typeof content];
+  const router = useRouter();
+  
+  const auth = useAuth();
+  const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
 
-  // Define the validation schema using Zod, now dependent on the language
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      initiateAnonymousSignIn(auth);
+    }
+  }, [user, isUserLoading, auth]);
+
   const formSchema = z.object({
     firstName: z.string().min(1, { message: t.firstNameRequired }),
     lastName: z.string().min(1, { message: t.lastNameRequired }),
@@ -100,20 +121,39 @@ export default function UserInfoPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: t.toastSuccessTitle,
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
-    });
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: t.toastErrorTitle,
+        description: "User not authenticated.",
+      });
+      return;
+    }
+    
+    const userInfo: UserInfo = values;
+    const userDocRef = doc(firestore, 'users', user.uid);
+
+    try {
+      setDocumentNonBlocking(userDocRef, userInfo, { merge: true });
+      
+      toast({
+        title: t.toastSuccessTitle,
+        description: t.toastSuccessDescription,
+      });
+
+      // Redirect back to home page after successful submission
+      router.push('/');
+
+    } catch (e) {
+      console.error("Error saving document: ", e);
+      toast({
+        variant: "destructive",
+        title: t.toastErrorTitle,
+        description: t.toastErrorDescription,
+      });
+    }
   }
 
-  // We need to re-initialize the resolver if the language changes
-  // so the validation messages are updated.
-  // This is a simple way to trigger a re-render and re-init of the form.
   const formKey = language;
 
   return (
@@ -206,7 +246,7 @@ export default function UserInfoPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">{t.submitButton}</Button>
+                  <Button type="submit" disabled={isUserLoading}>{isUserLoading ? 'Loading...' : t.submitButton}</Button>
                 </form>
               </Form>
             </CardContent>
@@ -216,3 +256,5 @@ export default function UserInfoPage() {
     </div>
   );
 }
+
+    

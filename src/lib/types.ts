@@ -14,6 +14,14 @@ export type InsurancePlan = {
   benefits: string;
 };
 
+export type UserInfo = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string;
+  notes?: string;
+}
+
 export type FormData = {
   age?: number;
   income?: number;
@@ -29,3 +37,5 @@ export type ActionResponse = {
   plans: InsurancePlan[];
   error?: string;
 }
+
+    
