@@ -1,0 +1,128 @@
+/**
+ * @fileoverview Firestore Security Rules for InsuroMatch AI Chatbot.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles, chat messages, and recommendations.
+ * Insurance plans are stored in a top-level collection with flexible access control.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles, accessible only to the user themselves.
+ * - /users/{userId}/chat_messages/{messageId}: Stores chat messages, accessible only to the user.
+ * - /users/{userId}/recommendations/{recommendationId}: Stores recommendations, accessible only to the user.
+ * - /insurance_plans/{insurancePlanId}: Stores insurance plans. Read access is public, write access is restricted.
+ *
+ * Key Security Decisions:
+ * - Users can only access their own profiles, chat messages, and recommendations.
+ * - Listing all users is disallowed.
+ * - Insurance plans are publicly readable but require specific authorization for creation, updates, and deletion (currently set to deny all).
+ *
+ * Denormalization for Authorization:
+ * The `userId` field within chat messages and recommendations enables path-based ownership, avoiding the need for `get()` calls in security rules.
+ *
+ * Structural Segregation:
+ * User-specific data is stored in user subcollections to provide a clear ownership structure and prevent accidental public listing of private data.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Enforces access control for user profiles. Only the user can read and write their own profile.
+     * @path /users/{userId}
+     * @allow (create) - User 'abc' can create their profile if request.auth.uid == 'abc'.
+     * @allow (get, update, delete) - User 'abc' can get, update, and delete their profile.
+     * @deny (create) - User 'def' cannot create a profile with ID 'abc'.
+     * @deny (get, update, delete) - User 'def' cannot get, update, or delete user 'abc's profile.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces access control for chat messages within a user's subcollection. Only the user can read and write their own messages.
+     * @path /users/{userId}/chat_messages/{messageId}
+     * @allow (create) - User 'abc' can create a chat message under /users/abc/.
+     * @allow (get, list, update, delete) - User 'abc' can get, list, update, and delete chat messages under /users/abc/.
+     * @deny (create) - User 'def' cannot create a chat message under /users/abc/.
+     * @deny (get, list, update, delete) - User 'def' cannot get, list, update, or delete chat messages under /users/abc/.
+     * @principle Restricts access to a user's own data tree.
+     */
+    match /users/{userId}/chat_messages/{messageId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces access control for insurance plan recommendations within a user's subcollection. Only the user can read and write their own recommendations.
+     * @path /users/{userId}/recommendations/{recommendationId}
+     * @allow (create) - User 'abc' can create a recommendation under /users/abc/.
+     * @allow (get, list, update, delete) - User 'abc' can get, list, update, and delete recommendations under /users/abc/.
+     * @deny (create) - User 'def' cannot create a recommendation under /users/abc/.
+     * @deny (get, list, update, delete) - User 'def' cannot get, list, update, or delete recommendations under /users/abc/.
+     * @principle Restricts access to a user's own data tree.
+     */
+    match /users/{userId}/recommendations/{recommendationId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Defines access control for insurance plans. Read access is public, but write access is currently denied.
+     * @path /insurance_plans/{insurancePlanId}
+     * @allow (get, list) - Any user can retrieve insurance plan information.
+     * @deny (create, update, delete) - No user can create, update, or delete insurance plans.
+     * @principle Public read access with restricted writes.
+     */
+    match /insurance_plans/{insurancePlanId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the InsuroMatch AI chatbot.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "age": {
+          "type": "number",
+          "description": "The user's age."
+        },
+        "income": {
+          "type": "number",
+          "description": "The user's income."
+        },
+        "familyStatus": {
+          "type": "string",
+          "description": "The user's family status (e.g., single, married, divorced)."
+        },
+        "healthCondition": {
+          "type": "string",
+          "description": "The user's health condition."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents a single message in a conversation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the chat message."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who sent the message. (Relationship: User 1:N ChatMessage)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The timestamp of the message.",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "senderType": {
+          "type": "string",
+          "description": "Type of the sender (e.g., user, bot)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "timestamp",
+        "content",
+        "senderType"
+      ]
+    },
+    "InsurancePlan": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "InsurancePlan",
+      "type": "object",
+      "description": "Represents an insurance plan.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the insurance plan."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the insurance plan."
+        },
+        "coverage": {
+          "type": "string",
+          "description": "Description of the coverage provided by the plan."
+        },
+        "premium": {
+          "type": "number",
+          "description": "The premium amount for the plan."
+        },
+        "benefits": {
+          "type": "string",
+          "description": "Details of the benefits offered by the plan."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "coverage",
+        "premium",
+        "benefits"
+      ]
+    },
+    "Recommendation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Recommendation",
+      "type": "object",
+      "description": "Represents an insurance plan recommendation for a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the recommendation."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who received the recommendation. (Relationship: User 1:N Recommendation)"
+        },
+        "insurancePlanId": {
+          "type": "string",
+          "description": "Reference to the InsurancePlan that was recommended. (Relationship: InsurancePlan 1:N Recommendation)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The timestamp of the recommendation.",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string",
+          "description": "The AI's reasoning for this recommendation"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "insurancePlanId",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Access is restricted to the user themselves.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/chat_messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores chat messages for each user.  Path-based ownership ensures only the user can access their own messages.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique identifier of the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/recommendations/{recommendationId}",
+        "definition": {
+          "entityName": "Recommendation",
+          "schema": {
+            "$ref": "#/backend/entities/Recommendation"
+          },
+          "description": "Stores insurance plan recommendations for each user.  Path-based ownership ensures only the user can access their own recommendations.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "recommendationId",
+              "description": "The unique identifier of the insurance plan recommendation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/insurance_plans/{insurancePlanId}",
+        "definition": {
+          "entityName": "InsurancePlan",
+          "schema": {
+            "$ref": "#/backend/entities/InsurancePlan"
+          },
+          "description": "Stores insurance plan information.",
+          "params": [
+            {
+              "name": "insurancePlanId",
+              "description": "The unique identifier of the insurance plan."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to optimize security, scalability, and debuggability for the InsuroMatch AI Chatbot application. It leverages path-based ownership for user-specific data (chat messages and recommendations) and ensures authorization independence by avoiding `get()` calls in security rules. This is achieved through a structural segregation approach. The structure is designed for QAPs and enforces invariants such as ownership.\n\n*   **Users Collection:** Stores user profiles. Access is restricted to the user themselves, ensuring privacy.\n*   **User-Owned Chat Messages:** Chat messages are stored within user-specific subcollections (`/users/{userId}/chat_messages/{messageId}`). This establishes clear ownership, simplifies security rules, and supports efficient querying of a user's chat history. This structure enables secure `list` operations because access control is enforced on the collection group query level.\n*   **User-Owned Recommendations:** Insurance plan recommendations are stored within user-specific subcollections (`/users/{userId}/recommendations/{recommendationId}`). This follows the same ownership pattern as chat messages, ensuring secure access and simplified rules.\n*   **Insurance Plans Collection:** Insurance plans are stored in a root-level collection.  Depending on requirements (e.g. admin only create) security rules can be configured appropriately."
+  }
+}
