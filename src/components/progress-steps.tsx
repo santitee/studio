@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Step } from "@/lib/types";
+import { Check, CreditCard, FileText, Lightbulb, MessageSquare } from "lucide-react";
 
 interface ProgressStepsProps {
     currentStep: number;
@@ -11,64 +12,55 @@ interface ProgressStepsProps {
 const ProgressSteps = ({ currentStep, language }: ProgressStepsProps) => {
 
     const steps: Step[] = language === 'TH' ? [
-        { id: 1, name: 'สอบถามข้อมูล' },
-        { id: 2, name: 'แนะนำผลิตภัณฑ์' },
-        { id: 3, name: 'เลือกผลิตภัณฑ์' },
-        { id: 4, name: 'กรอกข้อมูล' },
-        { id: 5, name: 'ชำระเงิน' },
+        { id: 1, name: 'สอบถามข้อมูล', icon: MessageSquare },
+        { id: 2, name: 'แนะนำผลิตภัณฑ์', icon: Lightbulb },
+        { id: 3, name: 'เลือกผลิตภัณฑ์', icon: Check },
+        { id: 4, name: 'กรอกข้อมูล', icon: FileText },
+        { id: 5, name: 'ชำระเงิน', icon: CreditCard },
     ] : [
-        { id: 1, name: 'Inquiry' },
-        { id: 2, name: 'Recommendation' },
-        { id: 3, name: 'Select Product' },
-        { id: 4, name: 'Information' },
-        { id: 5, name: 'Payment' },
+        { id: 1, name: 'Inquiry', icon: MessageSquare },
+        { id: 2, name: 'Recommendation', icon: Lightbulb },
+        { id: 3, name: 'Select Product', icon: Check },
+        { id: 4, name: 'Information', icon: FileText },
+        { id: 5, name: 'Payment', icon: CreditCard },
     ];
 
     return (
         <div className="w-full py-4 px-4 md:px-8 bg-card border-b">
             <nav aria-label="Progress">
-                <ol role="list" className="flex items-center">
+                <ol role="list" className="grid grid-cols-5">
                     {steps.map((step, stepIdx) => (
-                        <li key={step.name} className={cn("relative", stepIdx !== steps.length - 1 ? "pr-8 sm:pr-20 flex-1" : "")}>
-                            {step.id < currentStep ? (
-                                <>
-                                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                        <div className="h-0.5 w-full bg-primary" />
-                                    </div>
-                                    <div
-                                        className="relative w-8 h-8 flex items-center justify-center bg-primary rounded-full"
-                                    >
-                                        <span className="text-primary-foreground text-xs">{step.id}</span>
-                                    </div>
-                                    <span className="absolute top-10 left-1/2 -translate-x-1/2 text-center text-xs text-primary mt-1 w-24">{step.name}</span>
-
-                                </>
-                            ) : step.id === currentStep ? (
-                                <>
-                                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                        <div className="h-0.5 w-full bg-muted" />
-                                    </div>
-                                    <div
-                                        className="relative w-8 h-8 flex items-center justify-center bg-background border-2 border-primary rounded-full"
-                                        aria-current="step"
-                                    >
-                                        <span className="text-primary text-xs font-semibold">{step.id}</span>
-                                    </div>
-                                    <span className="absolute top-10 left-1/2 -translate-x-1/2 text-center text-xs text-primary font-semibold mt-1 w-24">{step.name}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                        <div className="h-0.5 w-full bg-muted" />
-                                    </div>
-                                    <div
-                                        className="group relative w-8 h-8 flex items-center justify-center bg-background border-2 border-muted-foreground rounded-full"
-                                    >
-                                        <span className="text-muted-foreground text-xs">{step.id}</span>
-                                    </div>
-                                    <span className="absolute top-10 left-1/2 -translate-x-1/2 text-center text-xs text-muted-foreground mt-1 w-24">{step.name}</span>
-                                </>
-                            )}
+                        <li key={step.name} className="relative">
+                            <div className="flex items-center text-sm font-medium">
+                                <span className={cn(
+                                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                                    step.id < currentStep ? 'bg-primary text-primary-foreground' :
+                                    step.id === currentStep ? 'border-2 border-primary bg-background text-primary' :
+                                    'border-2 border-muted-foreground bg-background text-muted-foreground'
+                                )}>
+                                    {step.id < currentStep ? (
+                                        <Check className="h-5 w-5" />
+                                    ) : (
+                                        <step.icon className="h-5 w-5" />
+                                    )}
+                                </span>
+                                <span className={cn(
+                                    "ml-4 hidden md:block",
+                                    step.id === currentStep ? 'text-primary font-semibold' : 'text-muted-foreground'
+                                )}>
+                                    {step.name}
+                                </span>
+                            </div>
+                            {stepIdx !== steps.length - 1 ? (
+                                <div className={cn(
+                                    "absolute inset-y-0 right-0 hidden w-full translate-x-1/2 transform md:block",
+                                )}>
+                                    <div className={cn(
+                                        "h-0.5 w-full translate-y-4",
+                                        step.id < currentStep ? 'bg-primary' : 'bg-muted'
+                                    )} />
+                                </div>
+                            ) : null}
                         </li>
                     ))}
                 </ol>

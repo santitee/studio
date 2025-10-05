@@ -41,4 +41,5 @@ export type ActionResponse = {
 export type Step = {
   id: number;
   name: string;
+  icon: React.ElementType;
 };
