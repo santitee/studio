@@ -26,6 +26,7 @@ import { doc } from 'firebase/firestore';
 import { initiateAnonymousSignIn, setDocumentNonBlocking } from '@/firebase';
 import type { UserInfo } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import ProgressSteps from '@/components/progress-steps';
 
 const content = {
   TH: {
@@ -159,6 +160,7 @@ export default function UserInfoPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <Header language={language} setLanguage={setLanguage} chatStyle={chatStyle} />
+      <ProgressSteps currentStep={4} language={language} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <Button asChild variant="ghost" className="mb-4">
@@ -256,5 +258,3 @@ export default function UserInfoPage() {
     </div>
   );
 }
-
-    

@@ -38,4 +38,7 @@ export type ActionResponse = {
   error?: string;
 }
 
-    
+export type Step = {
+  id: number;
+  name: string;
+};

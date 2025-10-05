@@ -102,7 +102,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         const plansComponentMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
-          component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} />,
+          component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} language={language} />,
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
       } else {
