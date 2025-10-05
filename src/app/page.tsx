@@ -8,6 +8,7 @@ import ProgressSteps from '@/components/progress-steps';
 export default function Home() {
   const [language, setLanguage] = useState('TH');
   const [chatStyle, setChatStyle] = useState('professional');
+  const [currentStep, setCurrentStep] = useState(1);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -16,9 +17,13 @@ export default function Home() {
         setLanguage={setLanguage} 
         chatStyle={chatStyle} 
       />
-      <ProgressSteps currentStep={1} language={language} />
+      <ProgressSteps currentStep={currentStep} language={language} />
       <main className="flex-1 overflow-hidden">
-        <Chat language={language} chatStyle={chatStyle} />
+        <Chat 
+          language={language} 
+          chatStyle={chatStyle}
+          onNewResults={() => setCurrentStep(2)}
+        />
       </main>
     </div>
   );

@@ -17,9 +17,10 @@ import { useToast } from '@/hooks/use-toast';
 interface ChatProps {
   language: string;
   chatStyle: string;
+  onNewResults: () => void;
 }
 
-const Chat = ({ language, chatStyle }: ChatProps) => {
+const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -105,6 +106,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
           component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} language={language} />,
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
+        onNewResults(); // Notify parent component to update step
       } else {
         const errorMessage: Message = {
           id: crypto.randomUUID(),

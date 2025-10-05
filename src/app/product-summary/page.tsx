@@ -31,7 +31,7 @@ function ProductSummaryContent() {
     benefits: 'ผลประโยชน์',
     benefitSimulation: 'จำลองผลประโยชน์ (Infographic)',
     beneficiary: 'ผู้รับผลประโยชน์',
-    continueToPurchase: 'ดำเนินการต่อเพื่อซื้อ',
+    continueToPurchase: 'ดำเนินการต่อเพื่อกรอกข้อมูล',
     comingSoon: 'Infographic coming soon',
     beneficiaryManagement: 'Beneficiary management coming soon'
   } : {
@@ -41,7 +41,7 @@ function ProductSummaryContent() {
     benefits: 'Benefits',
     benefitSimulation: 'Benefit Simulation (Infographic)',
     beneficiary: 'Beneficiary',
-    continueToPurchase: 'Continue to Purchase',
+    continueToPurchase: 'Continue to Fill Information',
     comingSoon: 'Infographic coming soon',
     beneficiaryManagement: 'Beneficiary management coming soon'
   };
@@ -53,7 +53,7 @@ function ProductSummaryContent() {
       <ProgressSteps currentStep={3} language={language} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+          <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t.backToChat}
           </Button>
@@ -109,7 +109,7 @@ function ProductSummaryContent() {
               </div>
 
               <div className="flex justify-end pt-4">
-                <Button size="lg">{t.continueToPurchase}</Button>
+                <Button size="lg" onClick={() => router.push('/user-info')}>{t.continueToPurchase}</Button>
               </div>
             </CardContent>
           </Card>
