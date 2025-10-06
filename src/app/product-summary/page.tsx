@@ -52,8 +52,8 @@ function ProductSummaryContent() {
   const plan = {
     name: searchParams.get('name') || 'N/A',
     coverage: searchParams.get('coverage') || 'N/A',
-    premium: search-params.get('premium') || 'N/A',
-    benefits: search-params.get('benefits') || 'N/A',
+    premium: searchParams.get('premium') || 'N/A',
+    benefits: searchParams.get('benefits') || 'N/A',
   };
 
   const t = content[language as keyof typeof content];
