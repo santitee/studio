@@ -13,9 +13,27 @@ import { ArrowRight, DollarSign, ListChecks, ShieldCheck } from 'lucide-react';
 interface PlanResultsProps {
   plans: InsurancePlan[];
   onSelectPlan: (plan: InsurancePlan) => void;
+  language: string;
 }
 
-const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
+const content = {
+  TH: {
+    premium: "เบี้ยประกัน",
+    coverageDetails: "รายละเอียดความคุ้มครอง",
+    benefits: "ผลประโยชน์",
+    viewDetails: "ดูรายละเอียด",
+  },
+  EN: {
+    premium: "Premium",
+    coverageDetails: "Coverage Details",
+    benefits: "Benefits",
+    viewDetails: "View Details",
+  }
+};
+
+const PlanResults = ({ plans, onSelectPlan, language }: PlanResultsProps) => {
+  const t = content[language as keyof typeof content];
+
   return (
     <div className="p-4 animate-in fade-in duration-500">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -31,7 +49,7 @@ const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <DollarSign className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">เบี้ยประกัน</h4>
+                  <h4 className="font-semibold">{t.premium}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.premium}
                   </p>
@@ -40,7 +58,7 @@ const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">รายละเอียดความคุ้มครอง</h4>
+                  <h4 className="font-semibold">{t.coverageDetails}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.coverage}
                   </p>
@@ -49,7 +67,7 @@ const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <ListChecks className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
-                  <h4 className="font-semibold">ผลประโยชน์</h4>
+                  <h4 className="font-semibold">{t.benefits}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.benefits}
                   </p>
@@ -62,7 +80,7 @@ const PlanResults = ({ plans, onSelectPlan }: PlanResultsProps) => {
                 variant="outline"
                 onClick={() => onSelectPlan(plan)}
               >
-                ดูรายละเอียด
+                {t.viewDetails}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>

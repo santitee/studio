@@ -20,12 +20,13 @@ import Header from '@/components/header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useAuth, useFirestore, useUser } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import { initiateAnonymousSignIn, setDocumentNonBlocking } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { initiateAnonymousSignIn } from '@/firebase';
 import type { UserInfo } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import ProgressSteps from '@/components/progress-steps';
 
 const content = {
   TH: {
@@ -78,9 +79,11 @@ const content = {
   }
 }
 
-export default function UserInfoPage() {
-  const [language, setLanguage] = useState('TH');
-  const [chatStyle, setChatStyle] = useState('professional');
+function UserInfoForm() {
+  const searchParams = useSearchParams();
+  const [language, setLanguage] = useState(searchParams.get('lang') || 'TH');
+  const [chatStyle, setChatStyle] = useState(searchParams.get('style') || 'professional');
+
   const { toast } = useToast();
   const t = content[language as keyof typeof content];
   const router = useRouter();
@@ -120,7 +123,7 @@ export default function UserInfoPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user) {
       toast({
         variant: "destructive",
@@ -134,7 +137,7 @@ export default function UserInfoPage() {
     const userDocRef = doc(firestore, 'users', user.uid);
 
     try {
-      setDocumentNonBlocking(userDocRef, userInfo, { merge: true });
+      await setDoc(userDocRef, userInfo, { merge: true });
       
       toast({
         title: t.toastSuccessTitle,
@@ -142,7 +145,7 @@ export default function UserInfoPage() {
       });
 
       // Redirect back to home page after successful submission
-      router.push('/');
+      router.push(`/?lang=${language}&style=${chatStyle}`);
 
     } catch (e) {
       console.error("Error saving document: ", e);
@@ -158,11 +161,20 @@ export default function UserInfoPage() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <Header language={language} setLanguage={setLanguage} chatStyle={chatStyle} />
+      <Header 
+        language={language} 
+        setLanguage={(lang) => {
+          setLanguage(lang);
+          const newPath = `${window.location.pathname}?lang=${lang}&style=${chatStyle}`;
+          window.history.pushState({}, '', newPath);
+        }} 
+        chatStyle={chatStyle} 
+      />
+      <ProgressSteps currentStep="Form" language={language} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <Button asChild variant="ghost" className="mb-4">
-            <Link href="/">
+            <Link href={`/?lang=${language}&style=${chatStyle}`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t.backToHome}
             </Link>
@@ -257,4 +269,10 @@ export default function UserInfoPage() {
   );
 }
 
-    
+export default function UserInfoPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UserInfoForm />
+    </Suspense>
+  )
+}

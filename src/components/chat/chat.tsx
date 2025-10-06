@@ -58,6 +58,8 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
       coverage: plan.coverage,
       premium: plan.premium,
       benefits: plan.benefits,
+      lang: language,
+      style: chatStyle,
     });
     router.push(`/product-summary?${params.toString()}`);
   };
@@ -123,7 +125,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         const plansComponentMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
-          component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} />,
+          component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} language={language} />,
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
       } else {
