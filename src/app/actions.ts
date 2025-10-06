@@ -25,7 +25,7 @@ export async function getInsurancePlans(data: RecommendInsurancePlansInput) {
     console.error('Error getting insurance plans from AI:', error);
     // In case of an error, return mock data to prevent application failure
     // during development or demos.
-    const mockPlans: InsurancePlan[] = [
+    const mockPlansTH: InsurancePlan[] = [
       {
         name: 'ประกันชีวิต LifePlus Secure',
         coverage: 'คุ้มครอง 1,000,000 - 5,000,000 บาท',
@@ -41,10 +41,27 @@ export async function getInsurancePlans(data: RecommendInsurancePlansInput) {
           'ครอบคลุมค่าห้อง, ค่าอาหาร, ค่าแพทย์, ค่ายา, คุ้มครองผู้ป่วยใน (IPD) และผู้ป่วยนอก (OPD)',
       },
     ];
+
+    const mockPlansEN: InsurancePlan[] = [
+      {
+        name: 'LifePlus Secure',
+        coverage: 'Coverage 1,000,000 - 5,000,000 THB',
+        premium: 'Starts at 300 THB/month',
+        benefits:
+          'High coverage at a light price, pays benefits in case of death or total permanent disability, suitable as security for the family.',
+      },
+      {
+        name: 'HealthGuard Pro',
+        coverage: 'Lump-sum medical expenses up to 5,000,000 THB per year',
+        premium: 'Starts at 1,200 THB/month',
+        benefits:
+          'Covers room, food, doctor, and medicine costs, protects both in-patient (IPD) and out-patient (OPD).',
+      },
+    ];
     
     return { 
       success: false, 
-      plans: mockPlans, 
+      plans: data.language === 'EN' ? mockPlansEN : mockPlansTH, 
       error: 'Failed to get recommendations from AI. Showing popular plans instead.' 
     };
   }
