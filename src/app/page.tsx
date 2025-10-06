@@ -20,12 +20,6 @@ export default function Home() {
       <main className="flex-1 overflow-hidden">
         <Chat language={language} chatStyle={chatStyle} />
       </main>
-      {/* Temporary button to access the new form page */}
-      <div className="absolute bottom-24 right-4">
-        <Button asChild>
-          <Link href="/user-info">กรอกข้อมูลผู้ใช้</Link>
-        </Button>
-      </div>
     </div>
   );
 }

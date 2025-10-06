@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Message, InsurancePlan } from '@/lib/types';
+import type { Message, InsurancePlan, Step } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +13,8 @@ import PlanResults from '../plan-results';
 import { cn } from '@/lib/utils';
 import TypingIndicator from './typing-indicator';
 import { useToast } from '@/hooks/use-toast';
+import { mockChatData } from '@/ai/knowledge/mock-chat';
+import ProgressSteps from '../progress-steps';
 
 interface ChatProps {
   language: string;
@@ -26,6 +28,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState<Step>('Enquiry');
 
   useEffect(() => {
     setMessages([
@@ -49,6 +52,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   }, [messages, isPending]);
 
   const handleSelectPlan = (plan: InsurancePlan) => {
+    setCurrentStep('Product');
     const params = new URLSearchParams({
       name: plan.name,
       coverage: plan.coverage,
@@ -60,16 +64,32 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || isPending) return;
+    const trimmedInput = inputValue.trim();
+    if (!trimmedInput || isPending) return;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
       sender: 'user',
-      text: inputValue,
+      text: trimmedInput,
     };
     setMessages((prev) => [...prev, userMessage]);
-    const currentUserInput = inputValue;
     setInputValue('');
+
+    const mockResponse = mockChatData.find(
+      (chat) => chat.user_prompt.toLowerCase() === trimmedInput.toLowerCase()
+    );
+
+    if (mockResponse) {
+      setTimeout(() => {
+        const botMessage: Message = {
+          id: crypto.randomUUID(),
+          sender: 'bot',
+          text: mockResponse.chatbot,
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      }, 1000);
+      return;
+    }
 
     startTransition(async () => {
       const result = await getInsurancePlans({
@@ -77,7 +97,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
         income: 50000, // Mock data, will be replaced with form data
         familyStatus: 'โสด', // Mock data, will be replaced with form data
         healthCondition: 'สุขภาพดี', // Mock data, will be replaced with form data
-        preferences: currentUserInput,
+        preferences: trimmedInput,
         language: language,
         chatStyle: chatStyle,
       });
@@ -92,6 +112,7 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
       }
 
       if (result.plans && result.plans.length > 0) {
+        setCurrentStep('Recommendation');
         const resultsMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
@@ -119,7 +140,8 @@ const Chat = ({ language, chatStyle }: ChatProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="h-full flex flex-col max-w-5xl mx-auto">
+      <ProgressSteps currentStep={currentStep} language={language}/>
       <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef as any}>
         <div className="flex flex-col gap-6">
           {messages.map((msg) => (

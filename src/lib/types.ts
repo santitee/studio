@@ -38,4 +38,4 @@ export type ActionResponse = {
   error?: string;
 }
 
-    
+export type Step = 'Enquiry' | 'Recommendation' | 'Product' | 'Form' | 'Payment';
