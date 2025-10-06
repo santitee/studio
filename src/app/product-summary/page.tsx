@@ -38,41 +38,51 @@ function ProductSummaryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Use state to manage language, defaulting to 'TH' or from query param
   const [language, setLanguage] = useState(searchParams.get('lang') || 'TH');
   const [chatStyle, setChatStyle] = useState(searchParams.get('style') || 'professional');
+
+  const [plan, setPlan] = useState({
+    name: searchParams.get('name') || 'N/A',
+    coverage: searchParams.get('coverage') || 'N/A',
+    premium: searchParams.get('premium') || 'N/A',
+    benefits: searchParams.get('benefits') || 'N/A',
+  });
 
   useEffect(() => {
     const lang = searchParams.get('lang') || 'TH';
     const style = searchParams.get('style') || 'professional';
     setLanguage(lang);
     setChatStyle(style);
+    
+    // Update plan details from searchParams when they change
+    setPlan({
+      name: searchParams.get('name') || 'N/A',
+      coverage: searchParams.get('coverage') || 'N/A',
+      premium: searchParams.get('premium') || 'N/A',
+      benefits: searchParams.get('benefits') || 'N/A',
+    });
   }, [searchParams]);
-
-  const plan = {
-    name: searchParams.get('name') || 'N/A',
-    coverage: searchParams.get('coverage') || 'N/A',
-    premium: searchParams.get('premium') || 'N/A',
-    benefits: searchParams.get('benefits') || 'N/A',
-  };
 
   const t = content[language as keyof typeof content];
   
   const handleProceed = () => {
-    // Navigate to the user-info page, carrying over language and style
     router.push(`/user-info?lang=${language}&style=${chatStyle}`);
+  }
+
+  const handleLanguageChange = (newLang: string) => {
+    setLanguage(newLang);
+    // Create a new URLSearchParams object to update the URL
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set('lang', newLang);
+    // Use router.replace to update the URL without a full page reload
+    router.replace(`${window.location.pathname}?${newParams.toString()}`);
   }
 
   return (
     <div className="flex flex-col h-screen bg-background">
       <Header 
         language={language} 
-        setLanguage={(lang) => {
-          setLanguage(lang);
-          // Update URL without full navigation to keep state
-          const newPath = `${window.location.pathname}?name=${plan.name}&coverage=${plan.coverage}&premium=${plan.premium}&benefits=${plan.benefits}&lang=${lang}&style=${chatStyle}`;
-          window.history.pushState({}, '', newPath);
-        }} 
+        setLanguage={handleLanguageChange}
         chatStyle={chatStyle} 
       />
       <ProgressSteps currentStep="Product" language={language} />
