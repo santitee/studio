@@ -88,8 +88,9 @@ function ProductSummaryContent() {
       <ProgressSteps currentStep="Product" language={language} />
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+          <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
+            {t.backToChat}
             {t.backToChat}
           </Button>
           <Card>
@@ -103,12 +104,14 @@ function ProductSummaryContent() {
                   <DollarSign className="w-6 h-6 mt-1 text-primary" />
                   <div>
                     <h4 className="font-semibold">{t.premium}</h4>
+                    <h4 className="font-semibold">{t.premium}</h4>
                     <p className="text-muted-foreground">{plan.premium}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="w-6 h-6 mt-1 text-primary" />
                   <div>
+                    <h4 className="font-semibold">{t.coverage}</h4>
                     <h4 className="font-semibold">{t.coverage}</h4>
                     <p className="text-muted-foreground">{plan.coverage}</p>
                   </div>
@@ -118,6 +121,7 @@ function ProductSummaryContent() {
               <div className="flex items-start gap-3">
                 <ListChecks className="w-6 h-6 mt-1 text-primary" />
                 <div>
+                  <h4 className="font-semibold">{t.benefits}</h4>
                   <h4 className="font-semibold">{t.benefits}</h4>
                   <p className="text-muted-foreground whitespace-pre-line">{plan.benefits}</p>
                 </div>

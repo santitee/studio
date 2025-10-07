@@ -14,6 +14,7 @@ interface PlanResultsProps {
   plans: InsurancePlan[];
   onSelectPlan: (plan: InsurancePlan) => void;
   language: string;
+  language: string;
 }
 
 const content = {
@@ -50,6 +51,7 @@ const PlanResults = ({ plans, onSelectPlan, language }: PlanResultsProps) => {
                 <DollarSign className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
                   <h4 className="font-semibold">{t.premium}</h4>
+                  <h4 className="font-semibold">{t.premium}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.premium}
                   </p>
@@ -59,6 +61,7 @@ const PlanResults = ({ plans, onSelectPlan, language }: PlanResultsProps) => {
                 <ShieldCheck className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
                   <h4 className="font-semibold">{t.coverageDetails}</h4>
+                  <h4 className="font-semibold">{t.coverageDetails}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.coverage}
                   </p>
@@ -67,6 +70,7 @@ const PlanResults = ({ plans, onSelectPlan, language }: PlanResultsProps) => {
               <div className="flex items-start gap-3">
                 <ListChecks className="w-5 h-5 mt-1 text-primary/80" />
                 <div>
+                  <h4 className="font-semibold">{t.benefits}</h4>
                   <h4 className="font-semibold">{t.benefits}</h4>
                   <p className="text-sm text-muted-foreground">
                     {plan.benefits}
@@ -80,6 +84,7 @@ const PlanResults = ({ plans, onSelectPlan, language }: PlanResultsProps) => {
                 variant="outline"
                 onClick={() => onSelectPlan(plan)}
               >
+                {t.viewDetails}
                 {t.viewDetails}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
