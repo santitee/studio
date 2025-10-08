@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 import TypingIndicator from './typing-indicator';
 import { useToast } from '@/hooks/use-toast';
 import { mockChatData } from '@/ai/knowledge/mock-chat';
-import ProgressSteps from '../progress-steps';
 
 interface ChatProps {
   language: string;
@@ -29,7 +28,6 @@ const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<Step>('Enquiry');
 
   useEffect(() => {
     setMessages([
@@ -53,7 +51,6 @@ const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
   }, [messages, isPending]);
 
   const handleSelectPlan = (plan: InsurancePlan) => {
-    setCurrentStep('Product');
     const params = new URLSearchParams({
       name: plan.name,
       coverage: plan.coverage,
@@ -115,7 +112,7 @@ const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
       }
 
       if (result.plans && result.plans.length > 0) {
-        setCurrentStep('Recommendation');
+        onNewResults(); // Notify parent component to update step
         const resultsMessage: Message = {
           id: crypto.randomUUID(),
           sender: 'bot',
@@ -129,7 +126,6 @@ const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
           component: <PlanResults plans={result.plans} onSelectPlan={handleSelectPlan} language={language} />,
         };
         setMessages((prev) => [...prev, resultsMessage, plansComponentMessage]);
-        onNewResults(); // Notify parent component to update step
       } else {
         const errorMessage: Message = {
           id: crypto.randomUUID(),
@@ -145,7 +141,6 @@ const Chat = ({ language, chatStyle, onNewResults }: ChatProps) => {
 
   return (
     <div className="h-full flex flex-col max-w-5xl mx-auto">
-      <ProgressSteps currentStep={currentStep} language={language}/>
       <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef as any}>
         <div className="flex flex-col gap-6">
           {messages.map((msg) => (

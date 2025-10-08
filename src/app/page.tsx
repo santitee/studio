@@ -4,11 +4,12 @@ import Chat from '@/components/chat/chat';
 import Header from '@/components/header';
 import { useState } from 'react';
 import ProgressSteps from '@/components/progress-steps';
+import type { Step } from '@/lib/types';
 
 export default function Home() {
   const [language, setLanguage] = useState('TH');
   const [chatStyle, setChatStyle] = useState('professional');
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState<Step>('Enquiry');
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -22,7 +23,7 @@ export default function Home() {
         <Chat 
           language={language} 
           chatStyle={chatStyle}
-          onNewResults={() => setCurrentStep(2)}
+          onNewResults={() => setCurrentStep('Recommendation')}
         />
       </main>
     </div>
